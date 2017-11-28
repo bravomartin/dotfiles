@@ -10,10 +10,24 @@ source $DOTFILESDIR/atlas
 
 # GO
 export GOPATH="$HOME/WORK/gocode" # add the gopath var
+export PATH=$PATH:/usr/local/opt/go/libexec/bin # add the gopath var
 export PATH="$PATH:$GOPATH/bin" # add executable
 
-#php
-export PATH="$(brew --prefix homebrew/php/php56)/bin:$PATH"
+# Kubernetes kubectl
+source <(kubectl completion bash)
+
+# GOOGLE CLOUD
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/Users/bravomartin/google-cloud-sdk/path.bash.inc' ]; then source '/Users/bravomartin/google-cloud-sdk/path.bash.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/Users/bravomartin/google-cloud-sdk/completion.bash.inc' ]; then source '/Users/bravomartin/google-cloud-sdk/completion.bash.inc'; fi
+
+# PYTHON
+alias python='python3'
+alias pip='pip3'
+source /usr/local/bin/virtualenvwrapper.sh
 
 # RUBY
 [[ -s "$HOME/.profile" ]] && source "$HOME/.profile" # Load the default .profile
@@ -22,6 +36,8 @@ export PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
 
 export RBENV_ROOT=/usr/local/var/rbenv
 if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
+
+
 
 # POSTGRES
 export PATH=$PATH:/Applications/Postgres.app/Contents/Versions/9.4/bin
@@ -37,8 +53,11 @@ export PATH="$PATH:node_modules/.bin" # add local nodes to executable
 eval "$(gulp --completion=bash)"
 
 # PHP / COMPOSER
-
+export PATH="$(brew --prefix homebrew/php/php56)/bin:$PATH"
 export PATH="$PATH:~/.composer/vendor/bin" # add composer to executable
+
+# Convert TTF/OTF font to @font-face font stack
+alias fontstack='~/bin/css3FontConverter/convertFonts.sh'
 
 # GIT
 
@@ -71,15 +90,12 @@ source $DOTFILESDIR/git-completion.sh
 # from https://raw.github.com/git/git/master/contrib/completion/git-prompt.sh
 source $DOTFILESDIR/git-prompt.sh
 
-### HEROKU
-export PATH="/usr/local/heroku/bin:$PATH"
-
 # VAGRANT
 alias vgs='vagrant global-status'
 
 # SIMPLE SERVERS
-alias serve='python -m SimpleHTTPServer'
-alias pserve='php -S localhost:9001'
+alias server='python -m SimpleHTTPServer'
+alias pserver='php -S localhost:9001'
 
 # HELPERS
 
@@ -87,20 +103,19 @@ alias pserve='php -S localhost:9001'
 source $DOTFILESDIR/tab.bash
 
 
+function whichp(){
+  for var in "$@"
+  do
+    lsof -n -i :$var | grep LISTEN
+  done
+}
+
 # usage `killp 4000`
 function killp(){
-  if [[ $# -eq 0 ]] ; then
-    echo 'Kill Process on Port'
-    echo '---'
-    echo 'Specify a port to to kill processes. i.e. `killport 4000`'
-    return
-  fi
-  if [ -z $(lsof -t -i :$1) ]; then 
-    echo "no process running on port" $1 
-    return
-  fi
-  echo "Killing process running On port" $1 
-  kill $(lsof -t -i :$1)
+  for var in "$@"
+  do
+    lsof -n -i :$var | grep LISTEN | awk '{print $2}' | xargs kill -9
+  done
 }
 
 function openp (){
