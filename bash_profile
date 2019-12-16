@@ -14,7 +14,7 @@ export PATH=$PATH:/usr/local/opt/go/libexec/bin # add the gopath var
 export PATH="$PATH:$GOPATH/bin" # add executable
 
 # Kubernetes kubectl
-source <(kubectl completion bash)
+# source <(kubectl completion bash)
 
 # GOOGLE CLOUD
 
@@ -27,7 +27,8 @@ if [ -f '/Users/bravomartin/google-cloud-sdk/completion.bash.inc' ]; then source
 # PYTHON
 alias python='python3'
 alias pip='pip3'
-source /usr/local/bin/virtualenvwrapper.sh
+export PATH=$PATH:/Users/bravomartin/Library/Python/3.6/bin
+# source /usr/local/bin/virtualenvwrapper.sh
 
 # RUBY
 [[ -s "$HOME/.profile" ]] && source "$HOME/.profile" # Load the default .profile
@@ -37,31 +38,24 @@ export PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
 export RBENV_ROOT=/usr/local/var/rbenv
 if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
 
-
-
 # POSTGRES
-export PATH=$PATH:/Applications/Postgres.app/Contents/Versions/9.4/bin
-
+export PATH=$PATH:/Applications/Postgres.app/Contents/Versions/9.6/bin
 
 # NODE
-
 export NVM_DIR="$HOME/.nvm"
-. "/usr/local/opt/nvm/nvm.sh"
-export PATH="$PATH:node_modules/.bin" # add local nodes to executable
+[ -s "/usr/local/opt/nvm/nvm.sh" ] && . "/usr/local/opt/nvm/nvm.sh"  # This loads nvm
+[ -s "/usr/local/opt/nvm/etc/bash_completion" ] && . "/usr/local/opt/nvm/etc/bash_completion"  # This loads nvm bash_completion
 
-# GULP
-eval "$(gulp --completion=bash)"
+
 
 # PHP / COMPOSER
-export PATH="$(brew --prefix homebrew/php/php56)/bin:$PATH"
+# export PATH="$(brew --prefix homebrew/php/php56)/bin:$PATH"
 export PATH="$PATH:~/.composer/vendor/bin" # add composer to executable
 
 # Convert TTF/OTF font to @font-face font stack
 alias fontstack='~/bin/css3FontConverter/convertFonts.sh'
 
 # GIT
-
-alias gs="git status -s"
 
 git config --global alias.ca 'commit -am'
 git config --global push.default current
@@ -78,7 +72,8 @@ PS1='\n\e[0;34m\w/\e[m $(__git_ps1 "(on \e[0;91m\]%s\[\e[0m\])"):\n'
 
 git config --global color.ui true
 alias gl="git log --pretty=format:'%C(yellow)%h%Cred%d%Creset - %C(cyan)%an %Creset: %s %Cgreen(%cr)'"
-
+alias gstat="git status -s"
+alias git_cleanup='git branch --merged master | grep -v "\* master" | xargs -n 1 git branch -d'
 alias git_cleanup_remote="git branch -r --merged master |grep origin | grep -v '>' | grep -v master | awk '{split($0,a,"/"); print a[2]}'| xargs git push origin --delete"
 
 GIT_PS1_SHOWDIRTYSTATE=true
@@ -97,12 +92,13 @@ alias vgs='vagrant global-status'
 alias server='python -m SimpleHTTPServer'
 alias pserver='php -S localhost:9001'
 
+# Atom
+alias a=atom
+
+# chrome
+alias chromium-browser="/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome"
+
 # HELPERS
-
-# Open new tab
-source $DOTFILESDIR/tab.bash
-
-
 function whichp(){
   for var in "$@"
   do
@@ -122,27 +118,6 @@ function openp (){
   open http://localhost:$1
 }
 
-
-
-# OREILLY
-export GOREILLY="src/github.com/oreillymedia"
-function goreilly () {
-  if [[ $1 = "styleguide" ]]; then
-    cd $GOPATH/$GOREILLY/styleguide
-    gulp server
-  elif [[ $1 = "server" ]]; then
-    cd $GOPATH/$GOREILLY/prototype-server
-  elif [[ $1 = "api" ]]; then
-    cd $GOPATH/$GOREILLY/prototype-api
-  elif [[ $1 = "beta" ]]; then
-    cd $GOPATH/$GOREILLY/styleguide
-    tab $GOPATH/$GOREILLY/prototype-server 'gulp server'
-    tab $GOPATH/$GOREILLY/prototype-api gin
-  else
-    cd $GOPATH/$GOREILLY/$1
-  fi
-}
-
 # GENERAL
 alias ls='ls -F'
 alias ll='ls -l -h'
@@ -154,7 +129,7 @@ if ! grep -Fxq "set completion-ignore-case On" ~/.inputrc; then
 fi
 
 # Move to trash.
-function rm () {
+function rrm () {
   local path
   for path in "$@"; do
     # ignore any arguments
