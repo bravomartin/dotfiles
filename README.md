@@ -2,7 +2,7 @@
 
 Forked from @zischwartz, who probably forked it from somewhere else.
 
-##Installation
+## Installation
 
 run `install.sh`
 
