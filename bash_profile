@@ -5,9 +5,6 @@ export PATH="/usr/local/bin:$PATH"
 export PATH="$PATH:~/bin" # Add bin
 export PATH="$DOTFILESDIR:$PATH" # add this folder
 
-# ATLAS
-source $DOTFILESDIR/atlas
-
 # GO
 export GOPATH="$HOME/WORK/gocode" # add the gopath var
 export PATH=$PATH:/usr/local/opt/go/libexec/bin # add the gopath var
@@ -99,6 +96,7 @@ alias a=atom
 alias chromium-browser="/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome"
 
 # HELPERS
+# usage `whichp 4000`
 function whichp(){
   for var in "$@"
   do
@@ -114,7 +112,8 @@ function killp(){
   done
 }
 
-function openp (){
+# usage `openp 4000`
+function openp(){
   open http://localhost:$1
 }
 
@@ -123,6 +122,8 @@ alias ls='ls -F'
 alias ll='ls -l -h'
 alias la='ls -a'
 alias subl='/Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl'
+alias atom='/Applications/Atom.app/Contents/Resources/app/atom.sh'
+
 
 if ! grep -Fxq "set completion-ignore-case On" ~/.inputrc; then
   echo "set completion-ignore-case On" >> ~/.inputrc
