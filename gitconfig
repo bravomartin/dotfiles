@@ -4,7 +4,7 @@
 
 [github]
   user = bravomartin
-  token = 01674f45823b028007618b2c6525412b
+  token = <<>>
 
 [core]
   excludesfile = ~/.git-ignore-global
