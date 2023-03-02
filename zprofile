@@ -2,8 +2,15 @@
 DOTFILESDIR=$( cd "$( dirname "${(%):-%N}" )" && pwd )
 export PATH="/usr/local/sbin:$PATH"
 export PATH="/usr/local/bin:$PATH"
-export PATH="$PATH:~/bin" # Add bin
+export PATH="$PATH:$HOME/bin" # Add bin
 export PATH="$DOTFILESDIR:$PATH" # add this folder
+
+# restart ssh-agent
+eval "$(ssh-agent -s)"
+
+#CLI
+
+alias ls=exa
 
 # GO
 export GOPATH="$HOME/WORK/gocode" # add the gopath var
@@ -13,19 +20,14 @@ export PATH="$PATH:$GOPATH/bin" # add executable
 # Kubernetes kubectl
 # source <(kubectl completion bash)
 
-# GOOGLE CLOUD
-#
-# # The next line updates PATH for the Google Cloud SDK.
-# if [ -f '/Users/bravomartin/google-cloud-sdk/path.bash.inc' ]; then source '/Users/bravomartin/google-cloud-sdk/path.bash.inc'; fi
-#
-# # The next line enables shell command completion for gcloud.
-# if [ -f '/Users/bravomartin/google-cloud-sdk/completion.bash.inc' ]; then source '/Users/bravomartin/google-cloud-sdk/completion.bash.inc'; fi
+#JAVA openjdk
+export PATH="/usr/local/opt/openjdk/bin:$PATH"
 
 # # PYTHON
-# alias python='python3'
+alias python='python3'
 # alias pip='pip3'
 # export PATH=$PATH:/Users/bravomartin/Library/Python/3.6/bin
-# # source /usr/local/bin/virtualenvwrapper.sh
+# source /usr/local/bin/virtualenvwrapper.sh
 #
 # # RUBY
 # [[ -s "$HOME/.profile" ]] && source "$HOME/.profile" # Load the default .profile
@@ -36,7 +38,7 @@ export PATH="$PATH:$GOPATH/bin" # add executable
 # if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
 
 # POSTGRES
-export PATH=$PATH:/Applications/Postgres.app/Contents/Versions/9.6/bin
+export PATH=$PATH:/Applications/Postgres.app/Contents/Versions/13/bin
 
 # NODE
 export NVM_DIR="$HOME/.nvm"
@@ -44,7 +46,9 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "/usr/local/opt/nvm/etc/bash_completion" ] && . "/usr/local/opt/nvm/etc/bash_completion"  # This loads nvm bash_completion
 
 # PHP / COMPOSER
-# export PATH="$(brew --prefix homebrew/php/php56)/bin:$PATH"
+
+
+export PATH="$(brew --prefix php@7.4)/bin:$PATH"
 # export PATH="$PATH:~/.composer/vendor/bin" # add composer to executable
 
 # Convert TTF/OTF font to @font-face font stack
@@ -55,6 +59,7 @@ export NVM_DIR="$HOME/.nvm"
 git config --global alias.ac '!git add -A && git commit -m'
 git config --global push.default current
 git config --global alias.undo 'reset --soft HEAD^'
+git config --global alias.cleanup '!git branch --merged | egrep -v "(^\*|master|main|staging)" | xargs !git branch -d'
 
 export CLICOLOR=1
 export LSCOLORS=gxBxhxDxfxhxhxhxhxcxcx
@@ -63,12 +68,12 @@ export LSCOLORS=gxBxhxDxfxhxhxhxhxcxcx
 # PS1="\n\e[0;33m\w\e[m\n\u@\h  sez:\n"
 # PS1='[\u@\h \W$(__git_ps1 " (%s)")]\$ '
 # PS1='\n\e[0;33m\w\e[m\n\u@\h $(__git_ps1 "(on \e[0;35m\]%s\[\e[0m\])"):\n'
-PS1='\n\e[0;34m\w/\e[m $(__git_ps1 "(on \e[0;91m\]%s\[\e[0m\])"):\n'
+# PS1='\n\e[0;34m\w/\e[m $(__git_ps1 "(on \e[0;91m\]%s\[\e[0m\])"):\n'
 
 git config --global color.ui true
 alias gl="git log --pretty=format:'%C(yellow)%h%Cred%d%Creset - %C(cyan)%an %Creset: %s %Cgreen(%cr)'"
 alias gstat="git status -s"
-alias git_cleanup='git branch --merged master | grep -v "\* master" | xargs -n 1 git branch -d'
+alias git_cleanup='git branch --merged | egrep -v "(^\*|master|main|staging)" | xargs git branch -d'
 alias git_cleanup_remote="git branch -r --merged master |grep origin | grep -v '>' | grep -v master | awk '{split($0,a,"/"); print a[2]}'| xargs git push origin --delete"
 
 GIT_PS1_SHOWDIRTYSTATE=true
@@ -83,12 +88,14 @@ GIT_PS1_SHOWUNTRACKEDFILES=true
 # VAGRANT
 # alias vgs='vagrant global-status'
 
-# SIMPLE SERVERS
-alias server='python -m SimpleHTTPServer'
-alias pserver='php -S localhost:9001'
-
 # Atom
 alias a=atom
+
+# VS Code
+
+export PATH="$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
+
+
 
 # chrome
 alias chromium-browser="/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome"
@@ -141,5 +148,34 @@ function rrm () {
       done
       mv "$path" ~/.Trash/"$dst"
     fi
+  done
+}
+
+
+# QPDF / GhostScript
+
+function pdfoo(){
+  echo "optimizing pdf(s) with ebook settings"
+  for var in "$@"
+  do
+    name=$var:r
+    ps2pdf -dPDFSETTINGS=/ebook "$name.pdf" "$name-ebook.pdf"
+  done
+}
+
+function pdfo(){
+  echo "optimizing pdf(s) with printer settings"
+  for var in "$@"
+  do
+    name=$var:r
+    ps2pdf -dPDFSETTINGS=/printer "$name.pdf" "$name-printer.pdf"
+  done
+}
+
+function qpdfsplit(){
+  for var in "$@"
+  do
+    name=$var:r
+    qpdf --split-pages=1 "$name.pdf" "$name-%d.pdf"
   done
 }
