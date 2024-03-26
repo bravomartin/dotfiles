@@ -1,7 +1,8 @@
 # DOTFILESDIR SHOULD BE DEFINED FOR THIS TO RUN PROPERLY
 DOTFILESDIR=$( cd "$( dirname "${(%):-%N}" )" && pwd )
-export PATH="/usr/local/sbin:$PATH"
-export PATH="/usr/local/bin:$PATH"
+
+export PATH="/opt/homebrew/bin:$PATH"
+export PATH="/opt/homebrew/sbin:$PATH"
 export PATH="$PATH:$HOME/bin" # Add bin
 export PATH="$DOTFILESDIR:$PATH" # add this folder
 
@@ -25,8 +26,8 @@ export PATH="/usr/local/opt/openjdk/bin:$PATH"
 
 # # PYTHON
 alias python='python3'
-# alias pip='pip3'
-# export PATH=$PATH:/Users/bravomartin/Library/Python/3.6/bin
+alias pip='pip3'
+export PATH=$PATH:/Users/bravomartin/Library/Python/3.9/bin
 # source /usr/local/bin/virtualenvwrapper.sh
 #
 # # RUBY
@@ -38,12 +39,37 @@ alias python='python3'
 # if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
 
 # POSTGRES
+export PATH=$PATH:/Applications/Postgres.app/Contents/Versions/15/bin
+export PATH=$PATH:/Applications/Postgres.app/Contents/Versions/14/bin
 export PATH=$PATH:/Applications/Postgres.app/Contents/Versions/13/bin
 
 # NODE
 export NVM_DIR="$HOME/.nvm"
-[ -s "/usr/local/opt/nvm/nvm.sh" ] && . "/usr/local/opt/nvm/nvm.sh"  # This loads nvm
-[ -s "/usr/local/opt/nvm/etc/bash_completion" ] && . "/usr/local/opt/nvm/etc/bash_completion"  # This loads nvm bash_completion
+[ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
+[ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+
+# Calling 'nvm use' automatically in a directory with a .nvmrc file
+# place this after nvm initialization!
+autoload -U add-zsh-hook
+load-nvmrc() {
+  local node_version="$(nvm version)"
+  local nvmrc_path="$(nvm_find_nvmrc)"
+
+  if [ -n "$nvmrc_path" ]; then
+    local nvmrc_node_version=$(nvm version "$(cat "${nvmrc_path}")")
+
+    if [ "$nvmrc_node_version" = "N/A" ]; then
+      nvm install
+    elif [ "$nvmrc_node_version" != "$node_version" ]; then
+      nvm use
+    fi
+  elif [ "$node_version" != "$(nvm version default)" ]; then
+    echo "Reverting to nvm default version"
+    nvm use default
+  fi
+}
+add-zsh-hook chpwd load-nvmrc
+load-nvmrc
 
 # PHP / COMPOSER
 
@@ -57,6 +83,7 @@ export PATH="$(brew --prefix php@7.4)/bin:$PATH"
 # GIT
 
 git config --global alias.ac '!git add -A && git commit -m'
+git config --global alias.empty '!git commit --allow-empty -m'
 git config --global push.default current
 git config --global alias.undo 'reset --soft HEAD^'
 git config --global alias.cleanup '!git branch --merged | egrep -v "(^\*|master|main|staging)" | xargs !git branch -d'
@@ -130,9 +157,9 @@ alias subl='/Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl'
 alias atom='/Applications/Atom.app/Contents/Resources/app/atom.sh'
 
 
-# if ! grep -Fxq "set completion-ignore-case On" ~/.inputrc; then
-#   echo "set completion-ignore-case On" >> ~/.inputrc
-# fi
+if ! grep -Fxq "set completion-ignore-case On" ~/.inputrc; then
+  echo "set completion-ignore-case On" >> ~/.inputrc
+fi
 
 # Move to trash.
 function rrm () {
@@ -177,5 +204,14 @@ function qpdfsplit(){
   do
     name=$var:r
     qpdf --split-pages=1 "$name.pdf" "$name-%d.pdf"
+  done
+}
+
+
+function qpdfdecrypt(){
+  for var in "$@"
+  do
+    name=$var:r
+    qpdf --decrypt "$name.pdf" "$name-u.pdf"
   done
 }
