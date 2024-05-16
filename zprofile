@@ -83,7 +83,7 @@ export PATH="$(brew --prefix php@7.4)/bin:$PATH"
 # GIT
 
 git config --global alias.ac '!git add -A && git commit -m'
-git config --global alias.empty '!git commit --allow-empty -m'
+git config --global alias.ce '!git commit --allow-empty -m'
 git config --global push.default current
 git config --global alias.undo 'reset --soft HEAD^'
 git config --global alias.cleanup '!git branch --merged | egrep -v "(^\*|master|main|staging)" | xargs !git branch -d'
